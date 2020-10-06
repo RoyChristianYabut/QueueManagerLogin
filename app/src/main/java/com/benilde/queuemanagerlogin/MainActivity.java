@@ -17,11 +17,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import com.benilde.queuemanagerlogin.Security;
 
-public class MainActivity extends AppCompatActivity {
+
+public class MainActivity extends AppCompatActivity implements DBUtility {
 
     private EditText username;
     private EditText password;
@@ -64,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         String z="";
         boolean isSuccess=false;
 
-        String nm,pass;
+        String qmid, un, fn, ln, e;
 
 
         @Override
@@ -86,45 +89,32 @@ public class MainActivity extends AppCompatActivity {
             {
                 try {
                     Connection con = connectionClass.CONN();
+                    Security sec =new Security();
                     if (con == null) {
                         z = "Please check your internet connection";
                     } else {
 
-                        String query=" select username, password from queuemanager where username='"+usernam+"' and password = '"+passstr+"'";
+                        String query=LOGIN_CRED;
 
-
-                        Statement stmt = con.createStatement();
+                        PreparedStatement ps = con.prepareStatement(query);
+                        ps.setString(1, usernam);
+                        ps.setString(2, passstr);
                         // stmt.executeUpdate(query);
 
 
-                        ResultSet rs=stmt.executeQuery(query);
+                        ResultSet rs=ps.executeQuery();
 
                         while (rs.next())
-
                         {
-                            nm= rs.getString(1);
-                            pass=rs.getString(2);
-
-
-
-
-                            if(nm.equals(usernam)&&pass.equals(passstr))
-                            {
-
-                                isSuccess=true;
-                                z = "Login successfull";
-
-                            }
-
-                            else
-
-                                isSuccess=false;
-
-
+                            qmid=rs.getString(1);
+                            un=rs.getString(2);
+                            fn=rs.getString(3);
+                            ln=rs.getString(4);
+                            e=rs.getString(5);
+                            isSuccess=true;
+                            z = "Login successfull";
 
                         }
-
-
 
 
 
